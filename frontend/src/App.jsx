@@ -99,50 +99,61 @@ function App() {
     setIsModalOpen(true)
   }
 
-  function handleSimpan(e) {
+  async function handleSimpan(e) {
     e.preventDefault()
     if (!judulWorkflow.trim() || !isiPrompt.trim()) return
     setExecuting(true)
 
-    const isEditing = editingId !== null
-    const url = isEditing
-      ? `http://localhost:5000/api/prompts/${editingId}`
-      : 'http://localhost:5000/api/prompts'
-    const method = isEditing ? 'PUT' : 'POST'
+    try {
+      const isEditing = editingId !== null
+      // Guard: if we think we're editing, editingId MUST be defined.
+      if (isEditing && (editingId === undefined || editingId === null)) {
+        throw new Error('ID prompt tidak ditemukan untuk mode edit.')
+      }
 
-    fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: judulWorkflow, content: isiPrompt, category }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        // Update metrics when backend returns fresh stats (POST + DELETE)
-        if (data.stats) setStats(data.stats)
+      const url = isEditing
+        ? `http://localhost:5000/api/prompts/${editingId}`
+        : 'http://localhost:5000/api/prompts'
+      const method = isEditing ? 'PUT' : 'POST'
 
-        // Update local list in-place — no extra GET round-trip.
-        // PUT returns the updated row; POST returns nothing, so we prepend.
-        setPromptsList((prev) => {
-          if (isEditing && data.prompt) {
-            return prev.map((p) => (p.id === data.prompt.id ? data.prompt : p))
-          }
-          return prev
-        })
-
-        setIsModalOpen(false)
-        setJudulWorkflow('')
-        setIsiPrompt('')
-        setCategory('Umum')
-        setEditingId(null)
-        fetchPrompts()
-        showToast(
-          isEditing
-            ? 'Prompt berhasil diperbarui! ✏️'
-            : 'Prompt berhasil disimpan! 🚀'
-        )
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: judulWorkflow, content: isiPrompt, category }),
       })
-      .catch((err) => console.error('Simpan gagal:', err))
-      .finally(() => setExecuting(false))
+      if (!res.ok) throw new Error(`Server merespons ${res.status}`)
+      const data = await res.json()
+
+      // Update metrics when backend returns fresh stats (POST + DELETE)
+      if (data.stats) setStats(data.stats)
+
+      // Local update — no extra GET round-trip.
+      // PUT returns the updated row (replace in place);
+      // POST returns nothing (refetch to get the new id + order).
+      if (isEditing && data.prompt && data.prompt.id !== undefined) {
+        setPromptsList((prev) =>
+          prev.map((p) => (p.id === data.prompt.id ? data.prompt : p))
+        )
+      } else {
+        await fetchPrompts()
+      }
+
+      setIsModalOpen(false)
+      setJudulWorkflow('')
+      setIsiPrompt('')
+      setCategory('Umum')
+      setEditingId(null)
+      showToast(
+        isEditing
+          ? 'Prompt berhasil diperbarui! ✏️'
+          : 'Prompt berhasil disimpan! 🚀'
+      )
+    } catch (err) {
+      console.error('Simpan gagal:', err)
+      window.alert('Error sistem: ' + err.message)
+    } finally {
+      setExecuting(false)
+    }
   }
 
   function handleCopy(text) {
@@ -151,16 +162,33 @@ function App() {
     })
   }
 
-  function handleDelete(id) {
-    if (!window.confirm('Hapus prompt ini dari Vault?')) return
-    fetch(`http://localhost:5000/api/prompts/${id}`, { method: 'DELETE' })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.stats) setStats(data.stats)
-        fetchPrompts()
-        showToast('Prompt berhasil dihapus! 🗑️')
+  async function handleDelete(id) {
+    try {
+      // Guard: refuse to call backend with an undefined id.
+      if (id === undefined || id === null) {
+        throw new Error('ID prompt tidak valid (undefined).')
+      }
+      if (!window.confirm('Yakin ingin menghapus?')) return
+
+      const res = await fetch(`http://localhost:5000/api/prompts/${id}`, {
+        method: 'DELETE',
       })
-      .catch((err) => console.error('Hapus gagal:', err))
+      if (!res.ok) throw new Error(`Server merespons ${res.status}`)
+      const data = await res.json()
+
+      if (data.stats) setStats(data.stats)
+      // Local update: filter out the deleted prompt so the UI reacts instantly
+      // without waiting for a refetch round-trip.
+      setPromptsList((prev) => prev.filter((p) => p.id !== id))
+      showToast('Prompt berhasil dihapus! 🗑️')
+    } catch (err) {
+      console.error('Hapus gagal:', err)
+      window.alert('Error sistem: ' + err.message)
+    }
+  }
+
+  function handleClearSearch() {
+    setSearchQuery('')
   }
 
   function handleExport() {
@@ -343,10 +371,25 @@ function App() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  className="vault-toolbar__clear"
+                  onClick={handleClearSearch}
+                  aria-label="Bersihkan pencarian"
+                  title="Bersihkan pencarian"
+                  id="btn-clear-search"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              )}
             </div>
             <button
               type="button"
-              className="vault-toolbar__export"
+              className="vault-toolbar__export vault-toolbar__export--glass"
               id="btn-export"
               onClick={handleExport}
               title="Download backup seluruh prompt"

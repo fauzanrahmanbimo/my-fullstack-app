@@ -854,6 +854,7 @@
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
@@ -864,6 +865,7 @@
     opacity: 0;
     transform: scale(0.92) translateY(20px);
   }
+
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -919,6 +921,172 @@
   gap: 20px;
   width: 100%;
   max-width: 1100px;
+}
+
+/* ─── Vault Toolbar (Search + Export) ─── */
+.vault-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 8px 0 0;
+  flex-wrap: wrap;
+}
+
+.vault-toolbar__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 320px;
+  min-width: 240px;
+  max-width: 520px;
+  padding: 0 14px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+  transition:
+    border-color var(--duration-fast) var(--ease-out-quint),
+    background var(--duration-fast) var(--ease-out-quint),
+    box-shadow var(--duration-fast) var(--ease-out-quint);
+}
+
+.vault-toolbar__search:hover {
+  border-color: var(--border-default);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.vault-toolbar__search:focus-within {
+  border-color: var(--border-accent);
+  background: rgba(139, 92, 246, 0.06);
+  box-shadow:
+    0 0 0 3px rgba(139, 92, 246, 0.12),
+    0 0 20px rgba(139, 92, 246, 0.06);
+}
+
+.vault-toolbar__search-icon {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  margin-right: 10px;
+  transition: color var(--duration-fast) var(--ease-out-quint);
+}
+
+.vault-toolbar__search:focus-within .vault-toolbar__search-icon {
+  color: var(--accent-mid);
+}
+
+.vault-toolbar__input {
+  flex: 1;
+  height: 44px;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  letter-spacing: -0.1px;
+  min-width: 0;
+}
+
+.vault-toolbar__input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.vault-toolbar__clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-left: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    color var(--duration-fast) var(--ease-out-quint),
+    background var(--duration-fast) var(--ease-out-quint),
+    transform var(--duration-fast) var(--ease-out-back);
+}
+
+.vault-toolbar__clear:hover {
+  color: var(--text-primary);
+  background: rgba(248, 113, 113, 0.18);
+}
+
+.vault-toolbar__clear:active {
+  transform: scale(0.9);
+}
+
+.vault-toolbar__clear:focus-visible {
+  outline: 2px solid var(--accent-mid);
+  outline-offset: 2px;
+}
+
+/* Glassmorphism Export button — matches the vault-card / chip aesthetic */
+.vault-toolbar__export {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 20px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+  transition:
+    color var(--duration-fast) var(--ease-out-quint),
+    background var(--duration-fast) var(--ease-out-quint),
+    border-color var(--duration-fast) var(--ease-out-quint),
+    transform var(--duration-fast) var(--ease-out-back),
+    box-shadow var(--duration-fast) var(--ease-out-quint);
+}
+
+.vault-toolbar__export--glass:hover {
+  color: var(--text-primary);
+  background: rgba(139, 92, 246, 0.1);
+  border-color: var(--border-accent);
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 0 1px rgba(139, 92, 246, 0.18) inset,
+    0 6px 20px -8px rgba(139, 92, 246, 0.4);
+}
+
+.vault-toolbar__export--glass:active {
+  transform: scale(0.97);
+  transition-duration: 100ms;
+}
+
+.vault-toolbar__export--glass:focus-visible {
+  outline: 2px solid var(--accent-mid);
+  outline-offset: 2px;
+}
+
+.vault-toolbar__export--glass svg {
+  color: var(--accent-mid);
+  transition: transform var(--duration-fast) var(--ease-out-back);
+}
+
+.vault-toolbar__export--glass:hover svg {
+  transform: translateY(2px);
 }
 
 /* ─── Category Filter Chips ─── */
@@ -982,11 +1150,9 @@
 
 .vault-chip--active {
   color: var(--text-primary);
-  background: linear-gradient(
-    135deg,
-    var(--accent-start) 0%,
-    var(--accent-mid) 100%
-  );
+  background: linear-gradient(135deg,
+      var(--accent-start) 0%,
+      var(--accent-mid) 100%);
   border-color: transparent;
   box-shadow: 0 4px 16px -4px rgba(139, 92, 246, 0.45);
 }
@@ -1265,6 +1431,7 @@
     opacity: 0;
     transform: translateX(-50%) translateY(20px) scale(0.95);
   }
+
   100% {
     opacity: 1;
     transform: translateX(-50%) translateY(0) scale(1);
@@ -1375,6 +1542,19 @@
     grid-template-columns: 1fr;
   }
 
+  .vault-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .vault-toolbar__search {
+    max-width: none;
+  }
+
+  .vault-toolbar__export {
+    width: 100%;
+  }
+
   /* Toast responsive */
   .toast {
     left: 24px;
@@ -1388,6 +1568,7 @@
       opacity: 0;
       transform: translateY(20px) scale(0.95);
     }
+
     100% {
       opacity: 1;
       transform: translateY(0) scale(1);
