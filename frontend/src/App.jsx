@@ -10,6 +10,9 @@ function formatNumber(n) {
 
 const CATEGORIES = ['Umum', 'Akademik', 'Produksi Video', 'Bisnis']
 
+/** Base URL for the backend API. Falls back to local dev when VITE_API_URL is unset. */
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+
 function App() {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -23,6 +26,8 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState('Semua')
   const [editingId, setEditingId] = useState(null)
+  const [aiResponse, setAiResponse] = useState('')
+  const [aiLoading, setAiLoading] = useState(false)
   const toastTimer = useRef(null)
 
   function showToast(msg) {
@@ -32,13 +37,13 @@ function App() {
   }
 
   function fetchStats() {
-    return fetch('http://localhost:5000/api/stats')
+    return fetch(`${API_BASE}/api/stats`)
       .then((res) => res.json())
       .then((data) => setStats(data))
   }
 
   function fetchPrompts() {
-    return fetch('http://localhost:5000/api/prompts')
+    return fetch(`${API_BASE}/api/prompts`)
       .then((res) => res.json())
       .then((data) => setPromptsList(data))
   }
@@ -112,8 +117,8 @@ function App() {
       }
 
       const url = isEditing
-        ? `http://localhost:5000/api/prompts/${editingId}`
-        : 'http://localhost:5000/api/prompts'
+        ? `${API_BASE}/api/prompts/${editingId}`
+        : `${API_BASE}/api/prompts`
       const method = isEditing ? 'PUT' : 'POST'
 
       const res = await fetch(url, {
@@ -170,7 +175,7 @@ function App() {
       }
       if (!window.confirm('Yakin ingin menghapus?')) return
 
-      const res = await fetch(`http://localhost:5000/api/prompts/${id}`, {
+      const res = await fetch(`${API_BASE}/api/prompts/${id}`, {
         method: 'DELETE',
       })
       if (!res.ok) throw new Error(`Server merespons ${res.status}`)
@@ -203,6 +208,51 @@ function App() {
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
     showToast('Backup berhasil didownload! 📦')
+  }
+
+  async function handleGenerateAI() {
+    setAiLoading(true)
+    setAiResponse('')
+    try {
+      const baseUrl = import.meta.env.VITE_AI_BASE_URL.replace(/\/+$/, '')
+      const apiKey = import.meta.env.VITE_AI_API_KEY
+
+      const res = await fetch(
+        `${baseUrl}/gemini-2.5-flash:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: 'Buatkan tagline kreatif untuk bisnis photobooth.',
+                  },
+                ],
+              },
+            ],
+          }),
+        }
+      )
+
+      if (!res.ok) {
+        const errBody = await res.text()
+        throw new Error(`HTTP ${res.status}: ${errBody}`)
+      }
+
+      const data = await res.json()
+      const text =
+        data.candidates?.[0]?.content?.parts?.[0]?.text ||
+        'Tidak ada respons dari AI.'
+      setAiResponse(text)
+      showToast('AI berhasil generate! ✨')
+    } catch (err) {
+      console.error('AI Generate gagal:', err)
+      setAiResponse(`Error: ${err.message}`)
+    } finally {
+      setAiLoading(false)
+    }
   }
 
   return (
@@ -310,8 +360,90 @@ function App() {
               </svg>
               Lihat Demo
             </button>
+
+            <button
+              type="button"
+              className="cta-ai"
+              id="btn-generate-ai"
+              onClick={handleGenerateAI}
+              disabled={aiLoading}
+            >
+              {aiLoading ? (
+                <>
+                  <span className="cta-ai__spinner" aria-hidden="true" />
+                  Generating…
+                </>
+              ) : (
+                <>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2l2.4 7.4H22l-6.2 4.5L18.2 22 12 17.3 5.8 22l2.4-8.1L2 9.4h7.6z" />
+                  </svg>
+                  Generate dengan AI
+                </>
+              )}
+            </button>
           </div>
         </section>
+
+        {/* ── AI Response Card ── */}
+        {aiResponse && (
+          <section className="ai-response-section" id="ai-response-section" aria-label="Hasil AI">
+            <div className="ai-response-card">
+              <div className="ai-response-card__header">
+                <div className="ai-response-card__icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2l2.4 7.4H22l-6.2 4.5L18.2 22 12 17.3 5.8 22l2.4-8.1L2 9.4h7.6z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="ai-response-card__title">Respons AI</h3>
+                  <p className="ai-response-card__model">gemini-2.0-flash via OmniRoute</p>
+                </div>
+                <button
+                  type="button"
+                  className="ai-response-card__close"
+                  onClick={() => setAiResponse('')}
+                  aria-label="Tutup respons AI"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+              <blockquote className="ai-response-card__text">
+                {aiResponse}
+              </blockquote>
+              <div className="ai-response-card__actions">
+                <button
+                  type="button"
+                  className="vault-card__copy"
+                  onClick={() => handleCopy(aiResponse)}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                  Copy
+                </button>
+                <button
+                  type="button"
+                  className="cta-ai cta-ai--small"
+                  onClick={handleGenerateAI}
+                  disabled={aiLoading}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 4v6h-6" />
+                    <path d="M1 20v-6h6" />
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10" />
+                    <path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14" />
+                  </svg>
+                  Generate Ulang
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* ── Shimmer Divider ── */}
         <div className="shimmer-divider" aria-hidden="true" />

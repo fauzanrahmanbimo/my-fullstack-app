@@ -7,10 +7,10 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ─── CORS — izinkan akses dari frontend (Vite dev server) ───
+// ─── CORS — izinkan akses dari origin mana pun (sementara, untuk deploy) ───
 app.use(
     cors({
-        origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+        origin: '*',
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
     })
 );
