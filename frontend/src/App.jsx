@@ -29,6 +29,9 @@ function App() {
   const [aiResponse, setAiResponse] = useState('')
   const [aiLoading, setAiLoading] = useState(false)
   const toastTimer = useRef(null)
+  const [showSettings, setShowSettings] = useState(false)
+  const [showWorkflows, setShowWorkflows] = useState(false)
+  const [showDemo, setShowDemo] = useState(false)
 
   function showToast(msg) {
     if (toastTimer.current) clearTimeout(toastTimer.current)
@@ -286,12 +289,12 @@ function App() {
             </a>
           </li>
           <li>
-            <a href="#" className="navbar__link" id="nav-analytics" onClick={(e) => { e.preventDefault(); showToast('Fitur ini sedang dalam tahap pengembangan 🚀') }}>
+            <a href="#" className="navbar__link" id="nav-analytics" onClick={(e) => { e.preventDefault(); setShowWorkflows(true) }}>
               Workflows
             </a>
           </li>
           <li>
-            <a href="#" className="navbar__link" id="nav-settings" onClick={(e) => { e.preventDefault(); showToast('Fitur ini sedang dalam tahap pengembangan 🚀') }}>
+            <a href="#" className="navbar__link" id="nav-settings" onClick={(e) => { e.preventDefault(); setShowSettings(true) }}>
               Pengaturan
             </a>
           </li>
@@ -355,7 +358,7 @@ function App() {
               type="button"
               className="cta-secondary"
               id="btn-lihat-demo"
-              onClick={() => showToast('Fitur ini sedang dalam tahap pengembangan 🚀')}
+              onClick={() => setShowDemo(true)}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="6 3 20 12 6 21 6 3" fill="currentColor" opacity="0.6" />
@@ -829,6 +832,156 @@ function App() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* ── Settings Modal ── */}
+      {showSettings && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#12111c] border border-white/10 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl relative">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold text-white">Pengaturan Sistem</h2>
+                <button onClick={() => setShowSettings(false)} className="text-gray-400 hover:text-white transition-colors">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+              
+              <div className="mb-6 p-4 bg-white/5 rounded-xl border border-white/5">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white font-bold text-lg">
+                    BR
+                  </div>
+                  <div>
+                    <h3 className="text-white font-medium">Bimo Rahman Fauzan</h3>
+                    <span className="inline-block mt-1 px-2 py-0.5 bg-violet-500/20 text-violet-300 text-xs rounded border border-violet-500/30">Administrator</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider">Integrasi</h3>
+                
+                <div>
+                  <label className="block text-sm text-gray-300 mb-1.5">Google Gemini API Key</label>
+                  <input type="password" value="••••••••••••••••••••••••" readOnly className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-violet-500 transition-colors" />
+                </div>
+                
+                <div className="flex items-center justify-between p-3 bg-black/40 border border-white/10 rounded-lg">
+                  <div>
+                    <div className="text-white font-medium text-sm">Google Drive Cloud Sync</div>
+                    <div className="text-gray-400 text-xs mt-0.5">Sinkronisasi otomatis vault</div>
+                  </div>
+                  <div className="w-11 h-6 bg-violet-600 rounded-full relative cursor-pointer">
+                    <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-8">
+                <button onClick={() => setShowSettings(false)} className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-medium py-2.5 rounded-lg transition-all duration-200">
+                  Simpan Preferensi
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Workflows Modal ── */}
+      {showWorkflows && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#12111c] border border-white/10 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl">
+            <div className="p-6 border-b border-white/10 flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-violet-400"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                Manajemen Workflows
+              </h2>
+              <button onClick={() => setShowWorkflows(false)} className="text-gray-400 hover:text-white transition-colors">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-3">
+              {/* Item 1 */}
+              <div className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 rounded-xl transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                  </div>
+                  <div>
+                    <h3 className="text-white font-medium">Lightroom RAW to G-Drive Auto-Sync</h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>
+                      <span className="text-green-400 text-xs font-medium uppercase tracking-wider">Active</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="w-11 h-6 bg-green-500 rounded-full relative cursor-pointer shadow-[0_0_10px_rgba(34,197,94,0.3)]">
+                  <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+                </div>
+              </div>
+              
+              {/* Item 2 */}
+              <div className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 rounded-xl transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-yellow-500/20 flex items-center justify-center text-yellow-400">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+                  </div>
+                  <div>
+                    <h3 className="text-white font-medium">CapCut Video Frame Alignment Script</h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="w-2 h-2 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.8)]"></span>
+                      <span className="text-yellow-400 text-xs font-medium uppercase tracking-wider">Standby</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="w-11 h-6 bg-white/10 rounded-full relative cursor-pointer">
+                  <div className="absolute left-1 top-1 w-4 h-4 bg-gray-400 rounded-full"></div>
+                </div>
+              </div>
+              
+              {/* Item 3 */}
+              <div className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 rounded-xl transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                  </div>
+                  <div>
+                    <h3 className="text-white font-medium">Borojepret.in Photobooth Data Processing</h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></span>
+                      <span className="text-green-400 text-xs font-medium uppercase tracking-wider">Active</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="w-11 h-6 bg-green-500 rounded-full relative cursor-pointer shadow-[0_0_10px_rgba(34,197,94,0.3)]">
+                  <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Interactive Demo Modal ── */}
+      {showDemo && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="relative w-full max-w-4xl aspect-video bg-gradient-to-br from-[#12111c] to-black rounded-2xl border border-violet-500/30 shadow-[0_0_50px_-12px_rgba(139,92,246,0.5)] overflow-hidden flex flex-col items-center justify-center group">
+            <button onClick={() => setShowDemo(false)} className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/50 hover:bg-black/80 backdrop-blur border border-white/10 rounded-full flex items-center justify-center text-white transition-all">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            
+            {/* Glow Effects */}
+            <div className="absolute inset-0 bg-violet-600/5 mix-blend-screen pointer-events-none"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-violet-500/20 blur-[100px] pointer-events-none rounded-full"></div>
+            
+            {/* Play Button */}
+            <div className="relative z-10 w-24 h-24 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-white/20 hover:scale-105 transition-all duration-300 shadow-[0_0_30px_rgba(139,92,246,0.3)]">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="white" className="ml-2"><path d="M5 3l14 9-14 9V3z"></path></svg>
+            </div>
+            <h3 className="relative z-10 mt-6 text-2xl font-semibold text-white tracking-wide">Vault.AI Interactive Tour</h3>
+            <p className="relative z-10 mt-2 text-violet-300/80">Click to start the experience</p>
           </div>
         </div>
       )}
