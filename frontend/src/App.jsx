@@ -4,7 +4,7 @@ import './App.css'
 /** Format large numbers: 12400 → "12.4K", 1200000 → "1.2M" */
 function formatNumber(n) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M'
-  if (n >= 1_000)     return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K'
+  if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K'
   return String(n)
 }
 
@@ -34,6 +34,10 @@ function App() {
     if (toastTimer.current) clearTimeout(toastTimer.current)
     setToastMsg(msg)
     toastTimer.current = setTimeout(() => setToastMsg(''), 3000)
+  }
+
+  function scrollToSection(id) {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   }
 
   function fetchStats() {
@@ -277,17 +281,17 @@ function App() {
             </a>
           </li>
           <li>
-            <a href="#" className="navbar__link" id="nav-projects">
+            <a href="#" className="navbar__link" id="nav-projects" onClick={(e) => { e.preventDefault(); scrollToSection('vault-history') }}>
               Prompts
             </a>
           </li>
           <li>
-            <a href="#" className="navbar__link" id="nav-analytics">
+            <a href="#" className="navbar__link" id="nav-analytics" onClick={(e) => { e.preventDefault(); showToast('Fitur ini sedang dalam tahap pengembangan 🚀') }}>
               Workflows
             </a>
           </li>
           <li>
-            <a href="#" className="navbar__link" id="nav-settings">
+            <a href="#" className="navbar__link" id="nav-settings" onClick={(e) => { e.preventDefault(); showToast('Fitur ini sedang dalam tahap pengembangan 🚀') }}>
               Pengaturan
             </a>
           </li>
@@ -351,6 +355,7 @@ function App() {
               type="button"
               className="cta-secondary"
               id="btn-lihat-demo"
+              onClick={() => showToast('Fitur ini sedang dalam tahap pengembangan 🚀')}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="6 3 20 12 6 21 6 3" fill="currentColor" opacity="0.6" />
@@ -477,7 +482,7 @@ function App() {
         <div className="shimmer-divider" aria-hidden="true" />
 
         {/* ── Vault History Section ── */}
-        <section className="vault-section" id="vault-section" aria-labelledby="vault-title">
+        <section className="vault-section" id="vault-history" aria-labelledby="vault-title">
           <div className="vault-section__header">
             <p className="vault-section__label">Koleksi Tersimpan</p>
             <h2 className="vault-section__title" id="vault-title">
@@ -656,7 +661,7 @@ function App() {
               <div className="feature-card__icon" aria-hidden="true">⚡</div>
               <h3 className="feature-card__title">Real-time Monitoring</h3>
               <p className="feature-card__desc">
-                Pantau seluruh proses secara real-time dengan latensi di bawah 50ms. 
+                Pantau seluruh proses secara real-time dengan latensi di bawah 50ms.
                 Dashboard yang selalu update tanpa perlu refresh manual.
               </p>
             </div>
@@ -665,7 +670,7 @@ function App() {
               <div className="feature-card__icon" aria-hidden="true">🔄</div>
               <h3 className="feature-card__title">Auto-Eksekusi Cerdas</h3>
               <p className="feature-card__desc">
-                Atur workflow otomatis berbasis trigger dan jadwal. 
+                Atur workflow otomatis berbasis trigger dan jadwal.
                 Sistem AI membantu mengoptimalkan urutan eksekusi.
               </p>
             </div>
@@ -674,7 +679,7 @@ function App() {
               <div className="feature-card__icon" aria-hidden="true">🛡️</div>
               <h3 className="feature-card__title">Keamanan Berlapis</h3>
               <p className="feature-card__desc">
-                Enkripsi end-to-end dengan autentikasi multi-faktor. 
+                Enkripsi end-to-end dengan autentikasi multi-faktor.
                 Audit trail lengkap untuk setiap aktivitas di platform.
               </p>
             </div>
