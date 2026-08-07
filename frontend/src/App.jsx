@@ -10,8 +10,8 @@ function formatNumber(n) {
 
 const CATEGORIES = ['Umum', 'Akademik', 'Produksi Video', 'Bisnis']
 
-/** Base URL for the backend API. Falls back to local dev when VITE_API_URL is unset. */
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+/** Base URL for the backend API (hardcoded to Render). */
+const API_BASE = 'https://my-fullstack-app-omzn.onrender.com'
 
 function App() {
   const [stats, setStats] = useState(null)
@@ -214,11 +214,8 @@ function App() {
     setAiLoading(true)
     setAiResponse('')
     try {
-      const baseUrl = import.meta.env.VITE_AI_BASE_URL.replace(/\/+$/, '')
-      const apiKey = import.meta.env.VITE_AI_API_KEY
-
       const res = await fetch(
-        `${baseUrl}/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${import.meta.env.VITE_AI_API_KEY}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -397,7 +394,7 @@ function App() {
                 </div>
                 <div>
                   <h3 className="ai-response-card__title">Respons AI</h3>
-                  <p className="ai-response-card__model">gemini-2.0-flash via OmniRoute</p>
+                  <p className="ai-response-card__model">gemini-1.5-flash via Google AI</p>
                 </div>
                 <button
                   type="button"
