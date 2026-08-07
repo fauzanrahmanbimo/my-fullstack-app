@@ -215,7 +215,7 @@ function App() {
     setAiResponse('')
     try {
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${import.meta.env.VITE_AI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${import.meta.env.VITE_AI_API_KEY}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
