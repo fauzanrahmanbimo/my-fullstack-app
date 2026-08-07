@@ -218,7 +218,7 @@ function App() {
       const apiKey = import.meta.env.VITE_AI_API_KEY
 
       const res = await fetch(
-        `${baseUrl}/gemini-2.5-flash:generateContent?key=${apiKey}`,
+        `${baseUrl}/gemini-1.5-flash:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
